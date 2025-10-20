@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 ALL_NUMBERS = set(range(1,10))
 BLANK = 0
@@ -299,10 +300,11 @@ def run_minisat_solver(board):
     solved = ingest_solution(output_fname)
     solved.pretty_print()
 
-
-
-def demo():
-    board = SudokuBoard()
+def demo(board=None):
+    if board is None:
+        board = SudokuBoard()
+    else:
+        board = SudokuBoard.from_file(board)
     print("Displaying initial problem")
     board.pretty_print()
     print("Internal Solver...")
@@ -312,4 +314,7 @@ def demo():
 
 
 if __name__ == "__main__":
-    demo()
+    if len(sys.argv) > 1:
+        demo(sys.argv[-1])
+    else:
+        demo()
