@@ -1,3 +1,5 @@
+import subprocess
+
 ALL_NUMBERS = set(range(1,10))
 BLANK = 0
 BLANK_CHAR = '_'
@@ -282,12 +284,32 @@ def ingest_solution(path):
             to_populate.update_cell(update['x'], update['y'], update['value'])
     return to_populate
     
-
-if __name__ == "__main__":
-    board = SudokuBoard()
-    board.pretty_print()
+def run_internal_solver(board):
     solution = solve_board(board)
     solution.pretty_print()
-    emit_problem(SudokuBoard(), "test.cnf")
-    solved = ingest_solution("results.sol")
+
+def run_minisat_solver(board):
+    input_fname = "test.cnf"
+    output_fname = "results.sol"
+    emit_problem(board, input_fname)
+    result = subprocess.run(["minisat", input_fname, output_fname])
+    #if result.returncode != 0:
+    #    print("Minisat didn't run correctly.", result.returncode)
+    #    exit(result.returncode)
+    solved = ingest_solution(output_fname)
     solved.pretty_print()
+
+
+
+def demo():
+    board = SudokuBoard()
+    print("Displaying initial problem")
+    board.pretty_print()
+    print("Internal Solver...")
+    run_internal_solver(board)
+    print("External Solver...")
+    run_minisat_solver(board)
+
+
+if __name__ == "__main__":
+    demo()
